@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: projeto
+  profiles:
+    active: dev
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  docker:
+    compose:
+
+      readiness:
+        timeout: 5m

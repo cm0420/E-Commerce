@@ -1,6 +1,6 @@
-package com.miguel.ecommerce.category.entity;
+package com.miguel.ecommerce.product.entity;
 
-import com.miguel.ecommerce.product.entity.Product;
+import com.miguel.ecommerce.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +10,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @EntityListeners(AuditingEntityListener.class)
 @Data
@@ -19,21 +19,30 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "categories")
-public class Category {
+@Table(name = "products")
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 80, unique = true)
+    @Column(name = "name", nullable = false, length = 80)
     private String name;
 
     @Column(name = "description", length = 255)
     private String description;
 
+    @Column(name = "price", nullable = false)
+    private BigDecimal price;
+
+    @Column(name = "sku", nullable = false, unique = true)
+    private String sku;
+
+    @Column(name = "url_image")
+    private String urlImage;
+
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive;
+    private Boolean isActive = true;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -43,9 +52,8 @@ public class Category {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product> products;
-
-
+    @JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Category category;
 
 }

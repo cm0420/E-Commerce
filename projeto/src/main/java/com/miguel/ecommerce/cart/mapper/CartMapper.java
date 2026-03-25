@@ -19,7 +19,7 @@ public interface CartMapper {
 
     @Mapping(target = "productId", source = "product.id")
     @Mapping(target = "productName", source = "product.name")
-    @Mapping(target = "subtotal", ignore = true)
+    @Mapping(target = "subTotal", ignore = true)
     CartItemResponse toCartItemResponse(CartItem cartItem);
 
 }

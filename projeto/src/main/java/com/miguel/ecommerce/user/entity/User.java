@@ -64,7 +64,7 @@ public class User implements UserDetails {
     private LocalDateTime updatedAt;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Address > addresses;
 
 

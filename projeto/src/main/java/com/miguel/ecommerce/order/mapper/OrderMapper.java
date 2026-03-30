@@ -18,7 +18,7 @@ public interface OrderMapper {
 
     @Mapping(target = "productId", source = "product.id")
     @Mapping(target = "productName", source = "product.name")
-    @Mapping(target = "subtotal",expression = "java(item.getUnitPrice().multiply(java.math.BigDecimal.valueOf(item.getQuantity())))")
+    @Mapping(target = "subTotal",expression = "java(orderItem.getUnitPrice().multiply(java.math.BigDecimal.valueOf(orderItem.getQuantity())))")
     OrderItemResponse toOrderItemResponse(OrderItem orderItem);
 
     List<OrderItemResponse> toOrderItemResponseList(List<OrderItem> items);

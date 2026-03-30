@@ -17,7 +17,11 @@ public record ProductRequest(
         String sku,
         String urlImage,
         @NotNull
-        Long categoryId
+        Long categoryId,
+        @NotNull
+        @DecimalMin(value = "0.01", message = "price must be greater than zero")
+        BigDecimal costPrice
+
 
 
 ) {

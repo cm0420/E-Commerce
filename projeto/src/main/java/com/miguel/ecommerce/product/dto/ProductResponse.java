@@ -7,6 +7,7 @@ public record ProductResponse(
         String name,
         String description,
         BigDecimal price,
+        BigDecimal costPrice,
         String sku,
         String urlImage,
         Boolean isActive,

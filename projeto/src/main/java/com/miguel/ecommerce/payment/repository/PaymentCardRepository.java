@@ -1,0 +1,13 @@
+package com.miguel.ecommerce.payment.repository;
+
+import com.miguel.ecommerce.payment.entity.PaymentCard;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface PaymentCardRepository extends JpaRepository <PaymentCard, Long>{
+    List<PaymentCard> findAllByUserId(Long userId);
+    Optional<PaymentCard> findByIdAndUserId(Long id, Long userId);
+    void resetDefaultByUserId(Long userId);
+}

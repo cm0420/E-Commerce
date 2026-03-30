@@ -4,6 +4,7 @@ import com.miguel.ecommerce.config.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -28,9 +29,28 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/users").permitAll()
+
+                        // ── PÚBLICO — sem autenticação ──────────────────────
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/categories/**").permitAll()
+
+                        // ── ADMIN only ──────────────────────────────────────
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,   "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,   "/api/v1/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,  "/api/v1/categories/**").hasRole("ADMIN")
+
+                        // ── ADMIN e WORKER ──────────────────────────────────
+                        .requestMatchers(HttpMethod.POST,  "/api/v1/products/**").hasAnyRole("ADMIN", "WORKER")
+                        .requestMatchers(HttpMethod.PUT,   "/api/v1/products/**").hasAnyRole("ADMIN", "WORKER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/products/**").hasAnyRole("ADMIN", "WORKER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/stock/**").hasAnyRole("ADMIN", "WORKER")
+
+                        // ── AUTENTICADO — qualquer role ─────────────────────
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

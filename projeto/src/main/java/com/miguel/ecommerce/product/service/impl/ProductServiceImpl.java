@@ -27,17 +27,22 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse save(ProductRequest productRequest) {
-        Category cateory = categoryRepository.findById(productRequest.categoryId()).
+        Category category = categoryRepository.findById(productRequest.categoryId()).
                 orElseThrow(() -> new ResourceNotFoundException("Category", productRequest.categoryId()));
         if (productRepository.existsBySku(productRequest.sku())) {
             throw new BusinessException("Product already exists");
         }
         Product product = productMapper.toEntity(productRequest);
-        product.setCategory(cateory);
-        Stock stock = new Stock();
-        stock.setProduct(product);
-        stock.setQuantity(0);
+        product.setCategory(category);
+
+        Product savedProduct = productRepository.save(product);
+        Stock stock = Stock.builder()
+                .product(savedProduct)
+                .quantity(0)
+                .build();
+
         stockRepository.save(stock);
+
         return productMapper.toProductResponse(productRepository.save(product));
     }
 

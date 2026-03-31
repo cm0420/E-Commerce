@@ -34,21 +34,36 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/products/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/stock/**").permitAll()
+
 
                         // ── ADMIN only ──────────────────────────────────────
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/users/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT,   "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/categories/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT,   "/api/v1/categories/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST,  "/api/v1/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/financial/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/orders/**").hasRole("ADMIN")
 
                         // ── ADMIN e WORKER ──────────────────────────────────
-                        .requestMatchers(HttpMethod.POST,  "/api/v1/products/**").hasAnyRole("ADMIN", "WORKER")
-                        .requestMatchers(HttpMethod.PUT,   "/api/v1/products/**").hasAnyRole("ADMIN", "WORKER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasAnyRole("ADMIN", "WORKER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasAnyRole("ADMIN", "WORKER")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/products/**").hasAnyRole("ADMIN", "WORKER")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/stock/**").hasAnyRole("ADMIN", "WORKER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/stock/**").hasAnyRole("ADMIN", "WORKER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasAnyRole("ADMIN", "WORKER")
+
+                        //---ADMIN AND CLIENT
+                        .requestMatchers("/api/v1/addresses/**").hasAnyRole("CLIENT", "ADMIN")
+                        .requestMatchers("/api/v1/cart/**").hasAnyRole("CLIENT", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/orders/**").hasAnyRole("CLIENT", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/orders/**").hasAnyRole("CLIENT", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/**").hasAnyRole("CLIENT", "ADMIN")
 
                         // ── AUTENTICADO — qualquer role ─────────────────────
                         .anyRequest().authenticated()

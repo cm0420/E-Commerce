@@ -29,7 +29,6 @@ public record UserRequest(
         String password,
 
         @NotBlank
-        @Size(min = 11, max= 11)
         @CPF
         String cpf,
 

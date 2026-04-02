@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "carts")
+@Table(name = "cart")
 public class Cart {
 
     @Id

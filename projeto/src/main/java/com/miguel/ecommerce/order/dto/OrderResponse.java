@@ -12,7 +12,7 @@ public record OrderResponse (
         Long addressId,
         OrderStatus status,
         BigDecimal total,
-        BigDecimal shippingCoast,
+        BigDecimal shippingCost,
         List<OrderItemResponse> items,
         LocalDateTime createdAt
 ) {

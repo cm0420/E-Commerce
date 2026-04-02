@@ -1,9 +1,9 @@
 spring:
   application:
     name: projeto
-  profiles:
-    active: dev
 
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: none
@@ -16,9 +16,7 @@ spring:
     locations: classpath:db/migration
   docker:
     compose:
+      enabled: false
 
       readiness:
         timeout: 5m
-jwt:
-  secret: 7Fa2nKbPpiP+TjBQVDCSxmtmoovha87wwwgsbeTYDxQ=
-  expiration: 86400000

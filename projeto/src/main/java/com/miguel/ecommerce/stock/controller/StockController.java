@@ -4,7 +4,7 @@ import com.miguel.ecommerce.stock.dto.StockRequest;
 import com.miguel.ecommerce.stock.dto.StockResponse;
 import com.miguel.ecommerce.stock.entity.Stock;
 import com.miguel.ecommerce.stock.service.StockService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+//import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

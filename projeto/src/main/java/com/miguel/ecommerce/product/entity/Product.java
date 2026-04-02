@@ -38,8 +38,8 @@ public class Product {
     @Column(name = "sku", nullable = false, unique = true)
     private String sku;
 
-    @Column(name = "url_image")
-    private String urlImage;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;

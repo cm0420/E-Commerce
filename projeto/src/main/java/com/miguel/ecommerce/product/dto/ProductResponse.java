@@ -9,7 +9,7 @@ public record ProductResponse(
         BigDecimal price,
         BigDecimal costPrice,
         String sku,
-        String urlImage,
+        String imageUrl,
         Boolean isActive,
         Long categoryId
 

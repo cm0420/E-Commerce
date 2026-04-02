@@ -15,7 +15,7 @@ public record ProductRequest(
         BigDecimal price,
         @NotBlank
         String sku,
-        String urlImage,
+        String imageUrl,
         @NotNull
         Long categoryId,
         @NotNull

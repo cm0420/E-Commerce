@@ -1,180 +1,92 @@
-# 🛒 E-Commerce API
+<div align="center">
 
-API RESTful completa para e-commerce, desenvolvida com **Spring Boot 3.5**, **Java 21** e arquitetura em camadas seguindo as melhores práticas do mercado.
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0d1117,100:0f2a2e&height=120&section=header&text=E-Commerce%20API&fontSize=40&fontColor=e6edf3&fontAlign=50&fontAlignY=42&desc=Backend%20de%20loja%20de%20bicicletas%20%E2%80%94%20do%20cadastro%20ao%20pagamento&descSize=14&descAlignY=72&descAlign=50" alt="E-Commerce API" width="100%" />
 
----
+![Java](https://img.shields.io/badge/Java_21-0d1117?style=flat-square&logo=openjdk&logoColor=ED8B00)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot_3.5-0d1117?style=flat-square&logo=springboot&logoColor=6DB33F)
+![Spring Security](https://img.shields.io/badge/Spring_Security_+_JWT-0d1117?style=flat-square&logo=springsecurity&logoColor=6DB33F)
+![MySQL](https://img.shields.io/badge/MySQL_8.4-0d1117?style=flat-square&logo=mysql&logoColor=4479A1)
+![Flyway](https://img.shields.io/badge/Flyway-0d1117?style=flat-square&logo=flyway&logoColor=CC0200)
+![Testcontainers](https://img.shields.io/badge/Testcontainers-0d1117?style=flat-square&logo=testcontainers&logoColor=5EEAD4)
+![Swagger](https://img.shields.io/badge/OpenAPI-0d1117?style=flat-square&logo=swagger&logoColor=85EA2D)
+![Status](https://img.shields.io/badge/status-concluído-0d1117?style=flat-square&color=1f6f5c)
 
-## 📋 Índice
+</div>
 
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Tecnologias](#tecnologias)
-- [Arquitetura](#arquitetura)
-- [Funcionalidades](#funcionalidades)
-- [Pré-requisitos](#pré-requisitos)
-- [Configuração do Ambiente](#configuração-do-ambiente)
-- [Como Rodar](#como-rodar)
-- [Documentação da API](#documentação-da-api)
-- [Endpoints](#endpoints)
-- [Autenticação](#autenticação)
-- [Testes](#testes)
-- [Estrutura do Projeto](#estrutura-do-projeto)
+<br />
 
----
+API REST de um e-commerce para uma loja de bikes, cobrindo o fluxo inteiro: cadastro e autenticação, catálogo, estoque, carrinho, pedido, pagamento e relatório financeiro. O foco foi em boas práticas, segurança e testabilidade, com testes de integração rodando contra um MySQL real.
 
-## 📌 Sobre o Projeto
+### `> destaques`
 
-API backend de um e-commerce completo para uma loja de bikes, cobrindo todo o fluxo desde o cadastro de usuários até o pagamento de pedidos. Desenvolvida com foco em boas práticas, segurança e testabilidade.
+- **Pagamento com Strategy Pattern:** PIX, cartão de crédito e boleto implementados como estratégias intercambiáveis. Um novo método é uma nova classe, sem mexer no fluxo do pedido.
+- **Estoque consistente:** validação antes de adicionar ao carrinho e devolução automática quando o pedido é cancelado.
+- **Preço congelado:** o carrinho guarda o preço do momento da adição e o pedido guarda o custo, o que permite calcular lucro bruto no relatório financeiro.
+- **Segurança:** JWT stateless, três perfis (`CLIENT`, `WORKER`, `ADMIN`) e cartão salvo só com os 4 últimos dígitos (PCI DSS).
+- **Validações reais:** CPF pelo algoritmo oficial e telefone brasileiro, com validators customizados do Bean Validation.
+- **Soft delete** em usuários, categorias e produtos.
+- **26 testes de integração** com Testcontainers + RestAssured.
 
----
+### `> stack`
 
-## 🚀 Tecnologias
+| | |
+|---|---|
+| **Core** | Java 21 · Spring Boot 3.5.12 · Spring Security 6.5 · Spring Data JPA / Hibernate 6.6 |
+| **Dados** | MySQL 8.4 · Flyway (11 migrations) |
+| **Produtividade** | MapStruct 1.6.3 · Lombok · JJWT 0.12.6 · SpringDoc OpenAPI 2.8 |
+| **Testes** | Testcontainers 1.20.4 · RestAssured 5.5 · JUnit 5 |
+| **Infra** | Docker Compose (MySQL em dev via Spring Boot Docker Compose Support) |
 
-| Tecnologia | Versão | Uso |
-|---|---|---|
-| Java | 21 | Linguagem principal |
-| Spring Boot | 3.5.12 | Framework principal |
-| Spring Security | 6.5 | Autenticação e autorização |
-| Spring Data JPA | 3.5 | Persistência de dados |
-| Hibernate | 6.6 | ORM |
-| MySQL | 8.4 | Banco de dados |
-| Flyway | 11.7 | Migrations de banco |
-| MapStruct | 1.6.3 | Mapeamento Entity ↔ DTO |
-| Lombok | 1.18 | Redução de boilerplate |
-| JJWT | 0.12.6 | Geração e validação de tokens JWT |
-| SpringDoc OpenAPI | 2.8.16 | Documentação Swagger |
-| Docker Compose | - | Orquestração do banco em desenvolvimento |
-| Testcontainers | 1.20.4 | Testes de integração |
-| RestAssured | 5.5.0 | Testes de API |
+### `> arquitetura`
 
----
-
-## 🏗️ Arquitetura
-
-O projeto segue a **arquitetura em camadas por domínio**:
+Organizada por domínio, e cada domínio tem as próprias camadas:
 
 ```
 com.miguel.ecommerce
-├── address/
-├── auth/
-├── cart/
-├── category/
-├── config/
-│   └── security/
-├── exception/
-├── financial/
-├── order/
-├── payment/
-├── product/
-├── stock/
-├── user/
-└── validator/
+├── auth/          login e emissão de JWT
+├── user/          cadastro, perfis, soft delete
+├── address/       endereços do cliente
+├── category/      categorias
+├── product/       produtos (SKU único, preço de custo)
+├── stock/         quantidade por produto
+├── cart/          carrinho persistido
+├── order/         pedidos e status
+├── payment/       Strategy: PIX, cartão, boleto
+├── financial/     relatório de receita, custo e lucro
+├── validator/     CPF e telefone
+└── config/        segurança e OpenAPI
 ```
 
-Cada domínio contém suas próprias camadas:
-
 ```
-dominio/
-├── controller/     → Endpoints REST
-├── service/
-│   └── impl/       → Regras de negócio
-├── repository/     → Acesso ao banco
-├── entity/         → Mapeamento das tabelas
-├── dto/
-│   ├── request/    → Dados de entrada
-│   └── response/   → Dados de saída
-└── mapper/         → Conversão Entity ↔ DTO
+<domínio>/
+├── controller/    endpoints REST
+├── service/impl/  regras de negócio
+├── repository/    Spring Data
+├── entity/        JPA
+├── dto/           request / response
+└── mapper/        MapStruct
 ```
 
-### Padrões utilizados
+**Ciclo do pedido:** `PENDING` → `CONFIRMED` (pagamento aprovado) → `SHIPPED` → `DELIVERED`. `CANCELLED` devolve os itens ao estoque. O frete é fixo em R$ 15,00 e o endereço de entrega fica imutável depois do pedido.
 
-- **Strategy Pattern** — processamento de pagamentos (PIX, Cartão, Boleto)
-- **DTO Pattern** — isolamento da camada de apresentação
-- **Repository Pattern** — abstração do acesso a dados
-- **Bean Validation** — validação de entrada com validators customizados
+### `> como rodar`
 
----
-
-## ✅ Funcionalidades
-
-### Usuários
-- Cadastro com validação de CPF (algoritmo real) e telefone brasileiro
-- Autenticação via JWT
-- Roles: `CLIENT`, `WORKER`, `ADMIN`
-- Soft delete (desativação sem remoção do banco)
-
-### Produtos e Categorias
-- CRUD completo de produtos com SKU único
-- Categorias com soft delete
-- Listagem pública sem autenticação
-
-### Estoque
-- Controle de quantidade por produto
-- Validação de estoque suficiente antes de adicionar ao carrinho
-- Criação automática do estoque ao cadastrar produto
-
-### Carrinho
-- Carrinho persistido no banco de dados
-- Adição, remoção e atualização de itens
-- Cálculo automático de subtotal e total
-- Preço salvo no momento da adição
-
-### Pedidos
-- Criação a partir do carrinho
-- Frete fixo de R$ 15,00
-- Status: `PENDING`, `CONFIRMED`, `SHIPPED`, `DELIVERED`, `CANCELLED`
-- Cancelamento com devolução automática de estoque
-- Endereço de entrega imutável após o pedido
-
-### Pagamento
-- Strategy Pattern para múltiplos métodos
-- PIX, Cartão de Crédito e Boleto
-- Cadastro de cartões (somente últimos 4 dígitos — PCI DSS)
-- Atualização automática do status do pedido após aprovação
-
-### Financeiro
-- Relatório de receita, custo e lucro bruto por período
-- Acesso restrito a ADMIN
-
----
-
-## 📦 Pré-requisitos
-
-- Java 21+
-- Docker Desktop
-- Maven (ou usar o `./mvnw` incluído)
-
----
-
-## ⚙️ Configuração do Ambiente
-
-### 1 — Clone o repositório
+Requisitos: **Java 21+** e **Docker**.
 
 ```bash
-git clone https://github.com/seu-usuario/ecommerce-api.git
-cd ecommerce-api
+git clone https://github.com/cm0420/E-Commerce.git
+cd E-Commerce
+cp projeto/.env.example .env        # credenciais do MySQL usadas pelo compose.yaml
 ```
-
-### 2 — Configure o arquivo `.env`
-
-Crie um arquivo `.env` na raiz do projeto baseado no `.env.example`:
-
-```bash
-cp .env.example .env
-```
-
-Preencha as variáveis:
 
 ```env
-# Banco de Dados
 DB_NAME=ecommerce_db
 DB_USER=ecommerce_user
 DB_PASSWORD=sua_senha
 DB_ROOT_PASSWORD=sua_senha_root
 ```
 
-### 3 — Configure o `application-dev.yaml`
-
-Crie o arquivo `src/main/resources/application-dev.yaml` baseado no exemplo:
+Crie `projeto/src/main/resources/application-dev.yaml` (profile ativo por padrão):
 
 ```yaml
 spring:
@@ -182,262 +94,156 @@ spring:
     url: jdbc:mysql://localhost:3306/ecommerce_db
     username: ecommerce_user
     password: sua_senha
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
 jwt:
-  secret: sua_chave_secreta_base64_256bits
+  secret: chave_base64_256_bits    # ex: openssl rand -base64 32
   expiration: 86400000
 ```
 
-> **Gerar chave JWT segura (PowerShell):**
-> ```powershell
-> $bytes = New-Object Byte[] 32
-> [System.Security.Cryptography.RNGCryptoServiceProvider]::Create().GetBytes($bytes)
-> [System.Convert]::ToBase64String($bytes)
-> ```
-
----
-
-## ▶️ Como Rodar
-
 ```bash
-# Com Maven Wrapper
-./mvnw spring-boot:run
-
-# Ou com Maven instalado
-mvn spring-boot:run
+./projeto/mvnw -f projeto/pom.xml spring-boot:run
 ```
 
-O Spring Boot irá automaticamente subir o container MySQL via Docker Compose antes de iniciar.
+O Spring Boot sobe o container do MySQL pelo `compose.yaml` e o Flyway aplica as migrations na inicialização.
 
-As **migrations do Flyway** rodam automaticamente na inicialização.
+Swagger UI: **http://localhost:8080/swagger-ui/index.html**
 
----
+### `> autenticação`
 
-## 📖 Documentação da API
-
-Com a aplicação rodando, acesse o Swagger:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🔗 Endpoints
-
-### Auth
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| POST | `/api/v1/auth/login` | Público | Login |
-
-### Usuários
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| POST | `/api/v1/users` | Público | Cadastrar usuário |
-| GET | `/api/v1/users` | ADMIN | Listar usuários |
-| GET | `/api/v1/users/{id}` | ADMIN | Buscar por ID |
-| PUT | `/api/v1/users/{id}` | ADMIN | Atualizar |
-| PATCH | `/api/v1/users/{id}/deactivate` | ADMIN | Desativar |
-
-### Endereços
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| POST | `/api/v1/addresses` | CLIENT, ADMIN | Criar endereço |
-| GET | `/api/v1/addresses/{id}` | CLIENT, ADMIN | Buscar por ID |
-| GET | `/api/v1/addresses/user/{userId}` | CLIENT, ADMIN | Listar por usuário |
-| PUT | `/api/v1/addresses/{id}` | CLIENT, ADMIN | Atualizar |
-| DELETE | `/api/v1/addresses/{id}` | CLIENT, ADMIN | Deletar |
-
-### Categorias
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| POST | `/api/v1/categories` | ADMIN | Criar categoria |
-| GET | `/api/v1/categories` | Público | Listar ativas |
-| GET | `/api/v1/categories/{id}` | Público | Buscar por ID |
-| PUT | `/api/v1/categories/{id}` | ADMIN | Atualizar |
-| PATCH | `/api/v1/categories/{id}/deactivate` | ADMIN | Desativar |
-
-### Produtos
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| POST | `/api/v1/products` | ADMIN, WORKER | Criar produto |
-| GET | `/api/v1/products` | Público | Listar ativos |
-| GET | `/api/v1/products/{id}` | Público | Buscar por ID |
-| GET | `/api/v1/products/sku/{sku}` | Público | Buscar por SKU |
-| GET | `/api/v1/products/category/{id}` | Público | Listar por categoria |
-| PUT | `/api/v1/products/{id}` | ADMIN, WORKER | Atualizar |
-| PATCH | `/api/v1/products/{id}/deactivate` | ADMIN, WORKER | Desativar |
-
-### Estoque
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| GET | `/api/v1/stock/product/{id}` | Público | Consultar estoque |
-| PATCH | `/api/v1/stock/product/{id}/add` | ADMIN, WORKER | Adicionar quantidade |
-| PATCH | `/api/v1/stock/product/{id}/remove` | ADMIN, WORKER | Remover quantidade |
-
-### Carrinho
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| GET | `/api/v1/cart` | CLIENT, ADMIN | Ver carrinho |
-| POST | `/api/v1/cart/items` | CLIENT, ADMIN | Adicionar item |
-| PATCH | `/api/v1/cart/items/{productId}` | CLIENT, ADMIN | Atualizar quantidade |
-| DELETE | `/api/v1/cart/items/{productId}` | CLIENT, ADMIN | Remover item |
-
-### Pedidos
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| POST | `/api/v1/orders` | CLIENT, ADMIN | Criar pedido |
-| GET | `/api/v1/orders` | CLIENT, ADMIN | Listar meus pedidos |
-| GET | `/api/v1/orders/{id}` | CLIENT, ADMIN | Buscar por ID |
-| PATCH | `/api/v1/orders/{id}/cancel` | CLIENT, ADMIN | Cancelar pedido |
-
-### Pagamento
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| POST | `/api/v1/payments` | CLIENT, ADMIN | Processar pagamento |
-| GET | `/api/v1/payments/cards` | CLIENT, ADMIN | Listar cartões |
-| POST | `/api/v1/payments/cards` | CLIENT, ADMIN | Cadastrar cartão |
-| DELETE | `/api/v1/payments/cards/{id}` | CLIENT, ADMIN | Remover cartão |
-
-### Financeiro
-| Método | Rota | Auth | Descrição |
-|---|---|---|---|
-| GET | `/api/v1/financial/report` | ADMIN | Relatório financeiro |
-
----
-
-## 🔐 Autenticação
-
-A API utiliza **JWT (JSON Web Token)** para autenticação stateless.
-
-### Como usar
-
-**1 — Faça login:**
 ```http
 POST /api/v1/auth/login
 Content-Type: application/json
 
-{
-  "email": "usuario@email.com",
-  "password": "senha123"
-}
+{ "email": "usuario@email.com", "password": "senha123" }
 ```
 
-**2 — Use o token retornado no header de cada requisição:**
-```http
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
-```
+Envie o token retornado em todas as rotas protegidas: `Authorization: Bearer <token>`.
 
-### Roles disponíveis
-
-| Role | Descrição |
+| Perfil | Acesso |
 |---|---|
-| `CLIENT` | Cliente da loja — compras e perfil |
-| `WORKER` | Colaborador — gerencia produtos e estoque |
-| `ADMIN` | Administrador — acesso completo |
+| `CLIENT` | compras, carrinho, pedidos, endereços e cartões |
+| `WORKER` | gestão de produtos e estoque |
+| `ADMIN` | tudo, incluindo usuários e relatório financeiro |
 
----
+### `> endpoints`
 
-## 🧪 Testes
+<details>
+<summary><b>Auth e usuários</b></summary>
 
-Os testes de integração utilizam **Testcontainers** para subir um MySQL real em Docker e **RestAssured** para testar os endpoints HTTP.
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/api/v1/auth/login` | público | login |
+| POST | `/api/v1/users` | público | cadastrar usuário |
+| GET | `/api/v1/users` | ADMIN | listar usuários |
+| GET | `/api/v1/users/{id}` | ADMIN | buscar por ID |
+| PUT | `/api/v1/users/{id}` | ADMIN | atualizar |
+| PATCH | `/api/v1/users/{id}/deactivate` | ADMIN | desativar |
+
+</details>
+
+<details>
+<summary><b>Endereços</b></summary>
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/api/v1/addresses` | CLIENT, ADMIN | criar |
+| GET | `/api/v1/addresses/{id}` | CLIENT, ADMIN | buscar por ID |
+| GET | `/api/v1/addresses/user/{userId}` | CLIENT, ADMIN | listar por usuário |
+| PUT | `/api/v1/addresses/{id}` | CLIENT, ADMIN | atualizar |
+| DELETE | `/api/v1/addresses/{id}` | CLIENT, ADMIN | remover |
+
+</details>
+
+<details>
+<summary><b>Categorias e produtos</b></summary>
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/api/v1/categories` | ADMIN | criar categoria |
+| GET | `/api/v1/categories` | público | listar ativas |
+| GET | `/api/v1/categories/{id}` | público | buscar por ID |
+| PUT | `/api/v1/categories/{id}` | ADMIN | atualizar |
+| PATCH | `/api/v1/categories/{id}/deactivate` | ADMIN | desativar |
+| POST | `/api/v1/products` | ADMIN, WORKER | criar produto |
+| GET | `/api/v1/products` | público | listar ativos |
+| GET | `/api/v1/products/{id}` | público | buscar por ID |
+| GET | `/api/v1/products/sku/{sku}` | público | buscar por SKU |
+| GET | `/api/v1/products/category/{id}` | público | listar por categoria |
+| PUT | `/api/v1/products/{id}` | ADMIN, WORKER | atualizar |
+| PATCH | `/api/v1/products/{id}/deactivate` | ADMIN, WORKER | desativar |
+
+</details>
+
+<details>
+<summary><b>Estoque</b></summary>
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| GET | `/api/v1/stock/product/{id}` | público | consultar |
+| PATCH | `/api/v1/stock/product/{id}/add` | ADMIN, WORKER | adicionar quantidade |
+| PATCH | `/api/v1/stock/product/{id}/remove` | ADMIN, WORKER | remover quantidade |
+
+</details>
+
+<details>
+<summary><b>Carrinho e pedidos</b></summary>
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| GET | `/api/v1/cart` | CLIENT, ADMIN | ver carrinho |
+| POST | `/api/v1/cart/items` | CLIENT, ADMIN | adicionar item |
+| PATCH | `/api/v1/cart/items/{productId}` | CLIENT, ADMIN | atualizar quantidade |
+| DELETE | `/api/v1/cart/items/{productId}` | CLIENT, ADMIN | remover item |
+| POST | `/api/v1/orders` | CLIENT, ADMIN | criar pedido a partir do carrinho |
+| GET | `/api/v1/orders` | CLIENT, ADMIN | listar meus pedidos |
+| GET | `/api/v1/orders/{id}` | CLIENT, ADMIN | buscar por ID |
+| PATCH | `/api/v1/orders/{id}/cancel` | CLIENT, ADMIN | cancelar |
+
+</details>
+
+<details>
+<summary><b>Pagamento e financeiro</b></summary>
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/api/v1/payments` | CLIENT, ADMIN | processar pagamento |
+| GET | `/api/v1/payments/cards` | CLIENT, ADMIN | listar cartões |
+| POST | `/api/v1/payments/cards` | CLIENT, ADMIN | cadastrar cartão |
+| DELETE | `/api/v1/payments/cards/{id}` | CLIENT, ADMIN | remover cartão |
+| GET | `/api/v1/financial/report` | ADMIN | receita, custo e lucro bruto por período |
+
+</details>
+
+### `> testes`
+
+Os testes de integração sobem um **MySQL real em Docker** (Testcontainers) e chamam a API por HTTP (RestAssured).
 
 ```bash
-# Rodar todos os testes
-./mvnw test
-
-# Rodar uma classe específica
-./mvnw test -Dtest=UserControllerTest
+./projeto/mvnw -f projeto/pom.xml test
+./projeto/mvnw -f projeto/pom.xml test -Dtest=OrderControllerTest   # uma classe
 ```
 
-### Cobertura de testes
-
-| Domínio | Testes |
+| Domínio | O que é coberto |
 |---|---|
-| Auth | Login, credenciais inválidas |
+| Auth | login, credenciais inválidas |
 | Usuários | CRUD, validações, duplicidade |
 | Categorias | CRUD, permissões, duplicidade |
 | Produtos | CRUD, SKU duplicado, permissões |
-| Estoque | Consulta, adição, remoção com erro |
-| Carrinho | Adição, remoção, estoque insuficiente |
-| Pedidos | Criação, cancelamento, carrinho vazio |
-| Financeiro | Relatório, controle de acesso |
+| Estoque | consulta, adição, remoção inválida |
+| Carrinho | adição, remoção, estoque insuficiente |
+| Pedidos | criação, cancelamento, carrinho vazio |
+| Financeiro | relatório, controle de acesso |
 
----
+### `> produção`
 
-## 📁 Estrutura do Projeto
-
-```
-projeto/
-├── src/
-│   ├── main/
-│   │   ├── java/com/miguel/ecommerce/
-│   │   │   ├── address/
-│   │   │   ├── auth/
-│   │   │   ├── cart/
-│   │   │   ├── category/
-│   │   │   ├── config/
-│   │   │   │   └── security/
-│   │   │   ├── exception/
-│   │   │   ├── financial/
-│   │   │   ├── order/
-│   │   │   ├── payment/
-│   │   │   ├── product/
-│   │   │   ├── stock/
-│   │   │   ├── user/
-│   │   │   └── validator/
-│   │   └── resources/
-│   │       ├── db/migration/
-│   │       │   ├── V1__Create_Table_Users.sql
-│   │       │   ├── V2__Create_Table_Addresses.sql
-│   │       │   ├── V3__create_categories_table.sql
-│   │       │   ├── V4__Create_Table_Products.sql
-│   │       │   ├── V5__create_table_stock.sql
-│   │       │   ├── V6__create_cart_table.sql
-│   │       │   ├── V7__create_order_table.sql
-│   │       │   ├── V8__add_shipping_cost_to_orders.sql
-│   │       │   ├── V9__create_payment_table.sql
-│   │       │   ├── V10__add_cost_price_to_products.sql
-│   │       │   └── V11__add_cost_price_to_order_items.sql
-│   │       ├── application.yaml
-│   │       └── application-prod.yaml
-│   └── test/
-│       ├── java/com/miguel/ecommerce/
-│       │   ├── BaseIntegrationTest.java
-│       │   ├── auth/
-│       │   ├── category/
-│       │   ├── financial/
-│       │   ├── order/
-│       │   ├── product/
-│       │   ├── stock/
-│       │   └── user/
-│       └── resources/
-│           └── application-test.yaml
-├── compose.yaml
-├── .env.example
-├── application-dev.yaml.example
-└── pom.xml
-```
-
----
-
-## 🌍 Variáveis de Ambiente em Produção
-
-Em produção defina as variáveis de ambiente no servidor e ative o profile `prod`:
+Ative o profile `prod` e defina as variáveis no servidor:
 
 ```bash
 SPRING_PROFILES_ACTIVE=prod
-DB_HOST=seu-host-mysql
-DB_NAME=ecommerce_db
-DB_USER=usuario
-DB_PASSWORD=senha_forte
-JWT_SECRET=chave_base64_256bits
-JWT_EXPIRATION=86400000
+DB_HOST=...  DB_NAME=...  DB_USER=...  DB_PASSWORD=...
+JWT_SECRET=...  JWT_EXPIRATION=86400000
 ```
 
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT.
+<div align="center">
+<br />
+<sub>Desenvolvido por <a href="https://github.com/cm0420">Miguel Costa</a></sub>
+</div>

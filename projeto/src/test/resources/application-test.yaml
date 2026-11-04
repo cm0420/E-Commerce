@@ -20,3 +20,8 @@ spring:
 
       readiness:
         timeout: 5m
+
+# Chave usada apenas nos testes automatizados (não é usada em dev nem em produção)
+jwt:
+  secret: d3U+LG4X4hzjFa4gQWozGY37tJXTwxoHqa9ARXRgPQM=
+  expiration: 86400000
